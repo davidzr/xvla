@@ -25,7 +25,7 @@ const (
 
 var ReservedWords = map[string]TokenType{
 	"rule":    RULE,
-	"appply":  APPLY,
+	"apply":   APPLY,
 	"return":  RETURN,
 	"ns":      NAMESPACE,
 	"assert":  ASSERT,

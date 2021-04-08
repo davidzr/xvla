@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]*$`).MatchString
+var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
 
 type StateType int
 
@@ -20,7 +20,7 @@ const (
 )
 
 func NextChar() (result *string) {
-	text := "var ns = \"hola\"; rule hola{return \"prueba\"}"
+	text := "context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
 	if position < len(text) {
 		char := string(text[position])
 		position++
@@ -31,9 +31,11 @@ func NextChar() (result *string) {
 	}
 }
 func UnGetNextChar() {
-	position--
+	if position > 0 {
+		position--
+	}
 }
-func NextToken() TokenType {
+func NextToken() (TokenType, string) {
 	save := false
 	var TokenString string
 	state := START
@@ -111,6 +113,6 @@ func NextToken() TokenType {
 			}
 		}
 	}
-	fmt.Println(TokenString)
-	return currentToken
+	fmt.Println("--", TokenString)
+	return currentToken, TokenString
 }
