@@ -20,7 +20,6 @@ func variable_stmt() {
 	match(IDENTIFIER)
 	match(EQUAL)
 	match(STRING)
-	fmt.Println("variable", tokenString)
 	match(SEMICOLON)
 }
 
@@ -29,14 +28,12 @@ func namespace_stmt() {
 	match(IDENTIFIER)
 	match(EQUAL)
 	match(STRING)
-	fmt.Println("Name space", tokenString)
 	match(SEMICOLON)
 }
 
 func return_stmt() {
 	match(RETURN)
 	match(STRING)
-	fmt.Println("return", tokenString)
 }
 
 func apply_stmt() {
@@ -49,9 +46,10 @@ func apply_stmt() {
 
 func context_body() {
 	for token == VARIABLE || token == APPLY {
-		if token == VARIABLE {
+		switch token {
+		case VARIABLE:
 			variable_stmt()
-		} else {
+		case APPLY:
 			apply_stmt()
 		}
 	}
@@ -61,10 +59,8 @@ func context_stmt() {
 	match(CONTEXT)
 	match(LPARENT)
 	if token == REFERENCE {
-		fmt.Println("LLego ID", tokenString)
 		match(REFERENCE)
 	} else if token == STRING {
-		fmt.Println("LLego STRING")
 		match(STRING)
 	}
 	match(RPARENT)
@@ -75,10 +71,12 @@ func context_stmt() {
 func assert_stmt() {
 	match(ASSERT)
 	match(STRING)
-	fmt.Println("assert", tokenString)
 }
 
 func rule_body() {
+	for token == VARIABLE {
+		variable_stmt()
+	}
 	assert_stmt()
 }
 

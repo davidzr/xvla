@@ -4,11 +4,12 @@ import (
 	"regexp"
 )
 
-var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString
+var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString
 
 type StateType int
 
 var position int
+var source string
 
 const (
 	START = iota
@@ -21,10 +22,12 @@ const (
 	DONE
 )
 
+func SetSource(s string) {
+	source = s
+}
 func NextChar() (result *string) {
-	text := "/* esto es una prueba */ ns hola = \"una cosa.com\"; context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
-	if position < len(text) {
-		char := string(text[position])
+	if position < len(source) {
+		char := string(source[position])
 		position++
 		return &char
 	} else {
