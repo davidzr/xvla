@@ -13,8 +13,8 @@ var position int
 
 const (
 	START = iota
-	INLITERAL
 	INIDENTIFIER
+	INREFERENCE
 	INSTRING
 	DONE
 )
@@ -48,9 +48,9 @@ func NextToken() (TokenType, string) {
 		case START:
 
 			if isAlphaNumeric(char) {
-				state = INLITERAL
-			} else if char == "$" {
 				state = INIDENTIFIER
+			} else if char == "$" {
+				state = INREFERENCE
 			} else if char == "\"" {
 				state = INSTRING
 			} else if char == "\n" || char == " " {
@@ -77,19 +77,19 @@ func NextToken() (TokenType, string) {
 					currentToken = ERROR
 				}
 			}
-		case INLITERAL:
-			if !isAlphaNumeric(char) {
-				UnGetNextChar()
-				save = false
-				state = DONE
-				currentToken = LITERAL
-			}
 		case INIDENTIFIER:
 			if !isAlphaNumeric(char) {
 				UnGetNextChar()
 				save = false
 				state = DONE
 				currentToken = IDENTIFIER
+			}
+		case INREFERENCE:
+			if !isAlphaNumeric(char) {
+				UnGetNextChar()
+				save = false
+				state = DONE
+				currentToken = REFERENCE
 			}
 		case INSTRING:
 			if char == "\"" {
@@ -105,7 +105,7 @@ func NextToken() (TokenType, string) {
 			TokenString += char
 		}
 		if state == DONE {
-			if currentToken == LITERAL {
+			if currentToken == IDENTIFIER {
 				t, ok := ReservedWords[TokenString]
 				if ok {
 					currentToken = t

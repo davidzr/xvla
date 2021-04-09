@@ -17,7 +17,7 @@ func match(expected TokenType) {
 
 func variable_stmt() {
 	match(VARIABLE)
-	match(LITERAL)
+	match(IDENTIFIER)
 	match(EQUAL)
 	match(STRING)
 	fmt.Println("variable", tokenString)
@@ -32,7 +32,7 @@ func return_stmt() {
 
 func apply_stmt() {
 	match(APPLY)
-	match(IDENTIFIER)
+	match(REFERENCE)
 	match(LBRACKET)
 	return_stmt()
 	match(RBRACKET)
@@ -51,9 +51,9 @@ func context_body() {
 func context_stmt() {
 	match(CONTEXT)
 	match(LPARENT)
-	if token == IDENTIFIER {
+	if token == REFERENCE {
 		fmt.Println("LLego ID", tokenString)
-		match(IDENTIFIER)
+		match(REFERENCE)
 	} else if token == STRING {
 		fmt.Println("LLego STRING")
 		match(STRING)
@@ -61,6 +61,7 @@ func context_stmt() {
 	match(RPARENT)
 	match(LBRACKET)
 	context_body()
+	match(RBRACKET)
 }
 func assert_stmt() {
 	match(ASSERT)
@@ -74,7 +75,7 @@ func rule_body() {
 
 func rule_stmt() {
 	match(RULE)
-	match(LITERAL)
+	match(IDENTIFIER)
 	match(LBRACKET)
 	rule_body()
 	match(RBRACKET)
