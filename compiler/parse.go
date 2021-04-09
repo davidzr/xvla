@@ -24,6 +24,15 @@ func variable_stmt() {
 	match(SEMICOLON)
 }
 
+func namespace_stmt() {
+	match(NAMESPACE)
+	match(IDENTIFIER)
+	match(EQUAL)
+	match(STRING)
+	fmt.Println("Name space", tokenString)
+	match(SEMICOLON)
+}
+
 func return_stmt() {
 	match(RETURN)
 	match(STRING)
@@ -82,13 +91,15 @@ func rule_stmt() {
 }
 
 func program() {
-	for token == CONTEXT || token == VARIABLE || token == RULE {
+	for token == CONTEXT || token == VARIABLE || token == NAMESPACE || token == RULE {
 		if token == CONTEXT {
 			context_stmt()
 		} else if token == RULE {
 			rule_stmt()
 		} else if token == VARIABLE {
 			variable_stmt()
+		} else if token == NAMESPACE {
+			namespace_stmt()
 		}
 	}
 }

@@ -20,7 +20,7 @@ const (
 )
 
 func NextChar() (result *string) {
-	text := "context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
+	text := "ns hola = \"una cosa.com\"; context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
 	if position < len(text) {
 		char := string(text[position])
 		position++
