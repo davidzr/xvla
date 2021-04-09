@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -16,11 +15,14 @@ const (
 	INIDENTIFIER
 	INREFERENCE
 	INSTRING
+	ENTERINGCOMMENT
+	EXITINGCOMMENT
+	INCOMMENT
 	DONE
 )
 
 func NextChar() (result *string) {
-	text := "ns hola = \"una cosa.com\"; context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
+	text := "/* esto es una prueba */ ns hola = \"una cosa.com\"; context($13f1){var i = \"78\";var 7q = \"5\";apply $wbg{return \"asd\"}}rule g{assert \"x\"}var 7a = \"3\";"
 	if position < len(text) {
 		char := string(text[position])
 		position++
@@ -51,6 +53,9 @@ func NextToken() (TokenType, string) {
 				state = INIDENTIFIER
 			} else if char == "$" {
 				state = INREFERENCE
+			} else if char == "/" {
+				state = ENTERINGCOMMENT
+				save = false
 			} else if char == "\"" {
 				state = INSTRING
 			} else if char == "\n" || char == " " {
@@ -96,6 +101,23 @@ func NextToken() (TokenType, string) {
 				state = DONE
 				currentToken = STRING
 			}
+		case ENTERINGCOMMENT:
+			save = false
+			if char == "*" {
+				state = INCOMMENT
+			}
+		case INCOMMENT:
+			save = false
+			if char == "*" {
+				state = EXITINGCOMMENT
+			}
+		case EXITINGCOMMENT:
+			save = false
+			if char == "/" {
+				state = START
+			} else if char != "*" {
+				state = INCOMMENT
+			}
 		default:
 			state = DONE
 			currentToken = ERROR
@@ -113,6 +135,5 @@ func NextToken() (TokenType, string) {
 			}
 		}
 	}
-	fmt.Println("--", TokenString)
 	return currentToken, TokenString
 }
