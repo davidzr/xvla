@@ -8,21 +8,21 @@ var token TokenType
 var tokenString string
 
 func match(expected TokenType) {
-	token, tokenString = NextToken()
+
 	if token != expected {
 		fmt.Println(expected, token)
 		panic("unexpected token " + tokenString)
 	}
+	token, tokenString = NextToken()
 }
 
 func variable_stmt() {
+	match(VARIABLE)
 	match(LITERAL)
 	match(EQUAL)
 	match(STRING)
 	fmt.Println("variable", tokenString)
 	match(SEMICOLON)
-
-	token, tokenString = NextToken()
 }
 
 func return_stmt() {
@@ -33,18 +33,15 @@ func return_stmt() {
 
 func apply_stmt() {
 
+	match(APPLY)
 	match(IDENTIFIER)
 	match(LBRACKET)
 	return_stmt()
 	match(RBRACKET)
-	token, tokenString = NextToken()
-
 }
 
 func context_body() {
-	token, tokenString = NextToken()
 	for token == VARIABLE || token == APPLY {
-		fmt.Println("The end body", tokenString)
 		if token == VARIABLE {
 			variable_stmt()
 		} else {
@@ -55,21 +52,18 @@ func context_body() {
 }
 
 func context_stmt() {
+	match(CONTEXT)
 	match(LPARENT)
-	token, tokenString = NextToken()
 	if token == IDENTIFIER {
-
 		fmt.Println("LLego ID", tokenString)
+		match(IDENTIFIER)
 	} else if token == STRING {
 		fmt.Println("LLego STRING")
-	} else {
-		panic("Unexpected token " + tokenString)
+		match(STRING)
 	}
-
 	match(RPARENT)
 	match(LBRACKET)
 	context_body()
-	token, tokenString = NextToken()
 }
 func assert_stmt() {
 	match(ASSERT)
@@ -82,11 +76,11 @@ func rule_body() {
 }
 
 func rule_stmt() {
+	match(RULE)
 	match(LITERAL)
 	match(LBRACKET)
 	rule_body()
 	match(RBRACKET)
-	token, _ = NextToken()
 }
 func program() {
 	for token == CONTEXT || token == VARIABLE || token == RULE {
