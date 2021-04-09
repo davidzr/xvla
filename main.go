@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/davidzr/xvla/compiler"
@@ -15,6 +14,6 @@ func main() {
 		panic(err)
 	}
 	compiler.SetSource(string(source))
-	compiler.Parse()
-	fmt.Println("DOne")
+	t := compiler.Parse()
+	compiler.Generate(t)
 }
