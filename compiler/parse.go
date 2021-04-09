@@ -8,7 +8,6 @@ var token TokenType
 var tokenString string
 
 func match(expected TokenType) {
-
 	if token != expected {
 		fmt.Println(expected, token)
 		panic("unexpected token " + tokenString)
@@ -32,7 +31,6 @@ func return_stmt() {
 }
 
 func apply_stmt() {
-
 	match(APPLY)
 	match(IDENTIFIER)
 	match(LBRACKET)
@@ -48,7 +46,6 @@ func context_body() {
 			apply_stmt()
 		}
 	}
-
 }
 
 func context_stmt() {
@@ -82,6 +79,7 @@ func rule_stmt() {
 	rule_body()
 	match(RBRACKET)
 }
+
 func program() {
 	for token == CONTEXT || token == VARIABLE || token == RULE {
 		if token == CONTEXT {
@@ -95,8 +93,6 @@ func program() {
 }
 
 func Parse() {
-
 	token, tokenString = NextToken()
 	program()
-
 }
