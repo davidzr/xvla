@@ -17,28 +17,39 @@ func match(expected TokenType) {
 
 func variable_stmt() {
 	match(VARIABLE)
-	match(IDENTIFIER)
+	identifier_stmt()
 	match(EQUAL)
-	match(STRING)
+	string_stmt()
 	match(SEMICOLON)
+}
+
+func string_stmt() {
+	match(STRING)
+}
+
+func reference_stmt() {
+	match(REFERENCE)
+}
+func identifier_stmt() {
+	match(IDENTIFIER)
 }
 
 func namespace_stmt() {
 	match(NAMESPACE)
-	match(IDENTIFIER)
+	identifier_stmt()
 	match(EQUAL)
-	match(STRING)
+	string_stmt()
 	match(SEMICOLON)
 }
 
 func return_stmt() {
 	match(RETURN)
-	match(STRING)
+	string_stmt()
 }
 
 func apply_stmt() {
 	match(APPLY)
-	match(REFERENCE)
+	reference_stmt()
 	match(LBRACKET)
 	return_stmt()
 	match(RBRACKET)
@@ -59,9 +70,9 @@ func context_stmt() {
 	match(CONTEXT)
 	match(LPARENT)
 	if token == REFERENCE {
-		match(REFERENCE)
+		reference_stmt()
 	} else if token == STRING {
-		match(STRING)
+		string_stmt()
 	}
 	match(RPARENT)
 	match(LBRACKET)
@@ -70,7 +81,7 @@ func context_stmt() {
 }
 func assert_stmt() {
 	match(ASSERT)
-	match(STRING)
+	string_stmt()
 }
 
 func rule_body() {
@@ -82,7 +93,7 @@ func rule_body() {
 
 func rule_stmt() {
 	match(RULE)
-	match(IDENTIFIER)
+	identifier_stmt()
 	match(LBRACKET)
 	rule_body()
 	match(RBRACKET)
