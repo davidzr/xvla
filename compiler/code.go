@@ -5,7 +5,7 @@ import "fmt"
 func emitContext(context *Node) {
 
 	child := context.child[0].value
-	fmt.Println(child)
+	fmt.Println(child, context.child[0].line)
 
 }
 

@@ -22,14 +22,16 @@ type Node struct {
 	value    string
 	child    []*Node
 	sibling  []*Node
+	line     int
 }
 
-func NewNode(t NodeType) *Node {
+func NewNode(t NodeType, line int) *Node {
 	node := Node{
 		nodeType: t,
 		child:    []*Node{},
 		value:    "",
 		sibling:  []*Node{},
+		line:     line,
 	}
 	return &node
 }

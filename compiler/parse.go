@@ -2,6 +2,7 @@ package compiler
 
 import (
 	"fmt"
+	"strconv"
 )
 
 var token TokenType
@@ -10,13 +11,13 @@ var tokenString string
 func match(expected TokenType) {
 	if token != expected {
 		fmt.Println(expected, token)
-		panic("unexpected token " + tokenString)
+		panic("unexpected token " + tokenString + ", On line:" + strconv.Itoa(line))
 	}
 	token, tokenString = NextToken()
 }
 
 func variable_stmt() *Node {
-	t := NewNode(NodeVariable)
+	t := NewNode(NodeVariable, line)
 	match(VARIABLE)
 	t.child = append(t.child, identifier_stmt())
 	match(EQUAL)
@@ -27,28 +28,27 @@ func variable_stmt() *Node {
 }
 
 func string_stmt() *Node {
-	t := NewNode(NodeString)
+	t := NewNode(NodeString, line)
 	t.value = tokenString
 	match(STRING)
 	return t
 }
 
 func reference_stmt() *Node {
-	t := NewNode(NodeReference)
+	t := NewNode(NodeReference, line)
 	t.value = tokenString
 	match(REFERENCE)
 	return t
 }
 func identifier_stmt() *Node {
-	t := NewNode(NodeIdentifier)
-	match(IDENTIFIER)
+	t := NewNode(NodeIdentifier, line)
 	t.value = tokenString
-
+	match(IDENTIFIER)
 	return t
 }
 
 func namespace_stmt() *Node {
-	t := NewNode(NodeNamespace)
+	t := NewNode(NodeNamespace, line)
 	match(NAMESPACE)
 	t.child = append(t.child, identifier_stmt())
 	match(EQUAL)
@@ -59,14 +59,14 @@ func namespace_stmt() *Node {
 }
 
 func return_stmt() *Node {
-	t := NewNode(NodeReturn)
+	t := NewNode(NodeReturn, line)
 	match(RETURN)
 	t.child = append(t.child, string_stmt())
 	return t
 }
 
 func apply_stmt() *Node {
-	t := NewNode(NodeApply)
+	t := NewNode(NodeApply, line)
 	match(APPLY)
 	t.child = append(t.child, reference_stmt())
 	match(LBRACKET)
@@ -76,7 +76,7 @@ func apply_stmt() *Node {
 }
 
 func context_body() *Node {
-	t := NewNode(NodeContextBody)
+	t := NewNode(NodeContextBody, line)
 	for token == VARIABLE || token == APPLY {
 		switch token {
 		case VARIABLE:
@@ -89,7 +89,7 @@ func context_body() *Node {
 }
 
 func context_stmt() *Node {
-	t := NewNode(NodeContext)
+	t := NewNode(NodeContext, line)
 	match(CONTEXT)
 	match(LPARENT)
 	if token == REFERENCE {
@@ -104,14 +104,14 @@ func context_stmt() *Node {
 	return t
 }
 func assert_stmt() *Node {
-	t := NewNode(NodeAssert)
+	t := NewNode(NodeAssert, line)
 	match(ASSERT)
 	t.child = append(t.child, string_stmt())
 	return t
 }
 
 func rule_body() *Node {
-	t := NewNode(NodeRuleBody)
+	t := NewNode(NodeRuleBody, line)
 	for token == VARIABLE {
 		t.child = append(t.child, variable_stmt())
 	}
@@ -121,7 +121,7 @@ func rule_body() *Node {
 }
 
 func rule_stmt() *Node {
-	t := NewNode(NodeRule)
+	t := NewNode(NodeRule, line)
 	match(RULE)
 	t.child = append(t.child, identifier_stmt())
 	match(LBRACKET)

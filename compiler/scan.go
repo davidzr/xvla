@@ -9,6 +9,7 @@ var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString
 type StateType int
 
 var position int
+var line int = 1
 var source string
 
 const (
@@ -29,6 +30,9 @@ func NextChar() (result *string) {
 	if position < len(source) {
 		char := string(source[position])
 		position++
+		if char == "\n" {
+			line++
+		}
 		return &char
 	} else {
 		char := ""
@@ -61,7 +65,9 @@ func NextToken() (TokenType, string) {
 				save = false
 			} else if char == "\"" {
 				state = INSTRING
-			} else if char == "\n" || char == " " {
+			} else if char == "\n" {
+				save = false
+			} else if char == " " {
 				save = false
 			} else {
 				state = DONE
