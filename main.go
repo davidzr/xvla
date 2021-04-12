@@ -16,4 +16,5 @@ func main() {
 	compiler.SetSource(string(source))
 	t := compiler.Parse()
 	compiler.Generate(t)
+	compiler.Analyze(t)
 }
