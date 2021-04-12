@@ -8,8 +8,8 @@ type Resource struct {
 
 var symtab = make(map[string]Resource)
 
-func Analyze(node Node) {
-	for _, n := range node.sibling {
+func Analyze(nodes []*Node) {
+	for _, n := range nodes {
 
 		switch n.nodeType {
 		case NodeVariable:
@@ -26,7 +26,7 @@ func Analyze(node Node) {
 				panic("Already declared variable")
 			}
 		case NodeIdentifier:
-			name := n.child[0].value[1:]
+			name := n.value[1:]
 
 			_, ok := symtab[name]
 
@@ -35,7 +35,7 @@ func Analyze(node Node) {
 			}
 
 		case NodeRule:
-			Analyze(node)
+			Analyze(n.child)
 		}
 	}
 }

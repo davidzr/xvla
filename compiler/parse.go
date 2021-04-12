@@ -146,7 +146,7 @@ func program() Node {
 	t := statement()
 	for token == CONTEXT || token == VARIABLE || token == NAMESPACE || token == RULE {
 		n := statement()
-		t.sibling = append(t.sibling, n)
+		t.Sibling = append(t.Sibling, n)
 	}
 	return *t
 }

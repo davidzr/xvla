@@ -21,7 +21,7 @@ type Node struct {
 	nodeType NodeType
 	value    string
 	child    []*Node
-	sibling  []*Node
+	Sibling  []*Node
 	line     int
 }
 
@@ -30,7 +30,7 @@ func NewNode(t NodeType, line int) *Node {
 		nodeType: t,
 		child:    []*Node{},
 		value:    "",
-		sibling:  []*Node{},
+		Sibling:  []*Node{},
 		line:     line,
 	}
 	return &node
