@@ -13,7 +13,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	compiler.SetSource(string(source))
-	t := compiler.Parse()
+	t := compiler.Parse(string(source))
 	compiler.Analyze(t.Sibling)
 }
