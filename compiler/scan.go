@@ -1,42 +1,18 @@
 package compiler
 
-import (
-	"regexp"
-)
-
-var isAlphaNumeric = regexp.MustCompile(`^[a-zA-Z0-9_]+$`).MatchString
-
-type StateType int
-
-var position int
-var line int = 1
-var source string
-
-const (
-	START = iota
-	INIDENTIFIER
-	INREFERENCE
-	INSTRING
-	ENTERINGCOMMENT
-	EXITINGCOMMENT
-	INCOMMENT
-	DONE
-)
-
-func Restart() {
-	position = 0
-	line = 1
+type scanner struct {
+	position            int
+	line                int
+	source, tokenString string
+	token               TokenType
 }
 
-func SetSource(s string) {
-	source = s
-}
-func NextChar() (result *string) {
-	if position < len(source) {
-		char := string(source[position])
-		position++
+func (s *scanner) nextChar() (result *string) {
+	if s.position < len(s.source) {
+		char := string(s.source[s.position])
+		s.position++
 		if char == "\n" {
-			line++
+			s.line++
 		}
 		return &char
 	} else {
@@ -44,19 +20,18 @@ func NextChar() (result *string) {
 		return &char
 	}
 }
-func UnGetNextChar() {
-	if position > 0 {
-		position--
+func (s *scanner) unGetNextChar() {
+	if s.position > 0 {
+		s.position--
 	}
 }
-func NextToken() (TokenType, string) {
+func (s *scanner) nextToken() {
 	save := false
-	var TokenString string
 	state := START
-	var currentToken TokenType
+	s.tokenString = ""
 	for state != DONE {
 
-		char := *NextChar()
+		char := *s.nextChar()
 		save = true
 		switch state {
 		case START:
@@ -78,42 +53,42 @@ func NextToken() (TokenType, string) {
 				state = DONE
 				switch char {
 				case "":
-					currentToken = EOF
+					s.token = EOF
 					save = false
 				case "(":
-					currentToken = LPARENT
+					s.token = LPARENT
 				case ")":
-					currentToken = RPARENT
+					s.token = RPARENT
 				case "{":
-					currentToken = LBRACKET
+					s.token = LBRACKET
 				case "}":
-					currentToken = RBRACKET
+					s.token = RBRACKET
 				case "=":
-					currentToken = EQUAL
+					s.token = EQUAL
 				case ";":
-					currentToken = SEMICOLON
+					s.token = SEMICOLON
 				default:
-					currentToken = ERROR
+					s.token = ERROR
 				}
 			}
 		case INIDENTIFIER:
 			if !isAlphaNumeric(char) {
-				UnGetNextChar()
+				s.unGetNextChar()
 				save = false
 				state = DONE
-				currentToken = IDENTIFIER
+				s.token = IDENTIFIER
 			}
 		case INREFERENCE:
 			if !isAlphaNumeric(char) {
-				UnGetNextChar()
+				s.unGetNextChar()
 				save = false
 				state = DONE
-				currentToken = REFERENCE
+				s.token = REFERENCE
 			}
 		case INSTRING:
 			if char == "\"" {
 				state = DONE
-				currentToken = STRING
+				s.token = STRING
 			}
 		case ENTERINGCOMMENT:
 			save = false
@@ -134,21 +109,20 @@ func NextToken() (TokenType, string) {
 			}
 		default:
 			state = DONE
-			currentToken = ERROR
+			s.token = ERROR
 		}
 
 		if save {
-			TokenString += char
+			s.tokenString += char
 		}
 		if state == DONE {
-			if currentToken == IDENTIFIER {
-				t, ok := ReservedWords[TokenString]
+			if s.token == IDENTIFIER {
+				t, ok := ReservedWords[s.tokenString]
 				if ok {
-					currentToken = t
+					s.token = t
 				}
 			}
 		}
 	}
 
-	return currentToken, TokenString
 }

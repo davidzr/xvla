@@ -23,6 +23,17 @@ const (
 	ERROR
 )
 
+const (
+	START = iota
+	INIDENTIFIER
+	INREFERENCE
+	INSTRING
+	ENTERINGCOMMENT
+	EXITINGCOMMENT
+	INCOMMENT
+	DONE
+)
+
 var ReservedWords = map[string]TokenType{
 	"rule":    RULE,
 	"apply":   APPLY,
