@@ -23,6 +23,11 @@ const (
 	DONE
 )
 
+func Restart() {
+	position = 0
+	line = 1
+}
+
 func SetSource(s string) {
 	source = s
 }
@@ -144,5 +149,6 @@ func NextToken() (TokenType, string) {
 			}
 		}
 	}
+
 	return currentToken, TokenString
 }
