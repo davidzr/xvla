@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -11,7 +10,6 @@ type parser struct {
 
 func (p *parser) match(expected TokenType) {
 	if p.s.token != expected {
-		fmt.Println(expected, p.s.token)
 		panic("unexpected token " + p.s.tokenString + ", On line:" + strconv.Itoa(p.s.line))
 	}
 	p.s.nextToken()
@@ -143,20 +141,19 @@ func (p *parser) statement() *Node {
 	}
 	return t
 }
-func (p *parser) program() Node {
+func (p *parser) program() *Node {
 	t := p.statement()
 	for p.s.token == CONTEXT || p.s.token == VARIABLE || p.s.token == NAMESPACE || p.s.token == RULE {
 		n := p.statement()
 		t.Sibling = append(t.Sibling, n)
 	}
-	return *t
+	return t
 }
 
-func Parse(source string) Node {
+func Parse(source string) *Node {
 	s := &scanner{source: source}
 	p := &parser{s: s}
 	p.s.nextToken()
-	s.nextToken()
 	t := p.program()
 	return t
 }

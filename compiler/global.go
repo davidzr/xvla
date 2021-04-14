@@ -1,9 +1,10 @@
 package compiler
 
 type TokenType int
+type StateType int
 
 const (
-	CONTEXT = iota
+	CONTEXT TokenType = iota
 	RULE
 	APPLY
 	RETURN
@@ -24,7 +25,7 @@ const (
 )
 
 const (
-	START = iota
+	START StateType = iota
 	INIDENTIFIER
 	INREFERENCE
 	INSTRING
