@@ -20,8 +20,9 @@ const (
 type Node struct {
 	nodeType NodeType
 	value    string
+	name     string
 	child    []*Node
-	Sibling  []*Node
+	sibling  []*Node
 	line     int
 }
 
@@ -30,7 +31,7 @@ func NewNode(t NodeType, line int) *Node {
 		nodeType: t,
 		child:    []*Node{},
 		value:    "",
-		Sibling:  []*Node{},
+		sibling:  []*Node{},
 		line:     line,
 	}
 	return &node

@@ -13,45 +13,31 @@ func Analyze(nodes []*Node) {
 
 		switch n.nodeType {
 		case NodeVariable:
-
-			name := n.child[0].value
-			_, ok := symtab[name]
-
+			_, ok := symtab[n.name]
 			if !ok {
-				symtab[name] = Resource{
-					value: n.child[1].value,
-					typeo: "string",
+				symtab[n.name] = Resource{
+					typeo: "variable",
 				}
-			} else {
-				panic("Already declared variable")
 			}
-		case NodeReference:
-			name := n.value[1:]
-
-			_, ok := symtab[name]
-
+		case NodeRule:
+			_, ok := symtab[n.name]
 			if !ok {
-				panic("Not declared variable " + n.value)
-			}
-		case NodeIdentifier:
-			name := n.value
-			_, ok := symtab[name]
-			if !ok {
-				symtab[name] = Resource{
-					value: name,
+				symtab[n.name] = Resource{
 					typeo: "rule",
 				}
 			}
-		case NodeContext:
-			Analyze(n.child)
-		case NodeApply:
+		case NodeNamespace:
+			_, ok := symtab[n.name]
+			if !ok {
+				symtab[n.name] = Resource{
+					typeo: "namespace",
+				}
+			}
+		case NodeContextBody:
 			Analyze(n.child)
 		case NodeRuleBody:
 			Analyze(n.child)
-		case NodeContextBody:
-			Analyze(n.child)
-		case NodeRule:
-			Analyze(n.child)
 		}
+
 	}
 }

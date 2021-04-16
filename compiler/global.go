@@ -35,7 +35,7 @@ const (
 	DONE
 )
 
-var ReservedWords = map[string]TokenType{
+var keywords = map[string]TokenType{
 	"rule":    RULE,
 	"apply":   APPLY,
 	"return":  RETURN,

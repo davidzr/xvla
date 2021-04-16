@@ -10,7 +10,7 @@ func emitContext(context *Node) {
 }
 
 func Generate(t Node) {
-	for _, n := range t.Sibling {
+	for _, n := range t.sibling {
 
 		switch n.nodeType {
 		case NodeContext:

@@ -117,7 +117,7 @@ func (s *scanner) nextToken() {
 		}
 		if state == DONE {
 			if s.token == IDENTIFIER {
-				t, ok := ReservedWords[s.tokenString]
+				t, ok := keywords[s.tokenString]
 				if ok {
 					s.token = t
 				}

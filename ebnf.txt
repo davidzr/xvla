@@ -1,14 +1,14 @@
 
 <program> ::= (<namespace_stmt> | <variable_stmt> | <context_stmt> | <rule_stmt>)+
-<context_stmt> ::= "context" "(" (<identifier> | <string>) ")" "{" <context_body> "}"
-<context_body> ::= <variable_stmt>* <apply_stmt>*
-<apply_stmt> ::= "apply " <identifier> "{" <return_stmt> "}"
-<rule_stmt> ::= "rule " <literal> "{" <rule_body> "}"
+<context_stmt> ::= "context" "(" (reference> | <string>) ")" "{" <context_body> "}"
+<context_body> ::= (<variable_stmt> | <apply_stmt>)*
+<apply_stmt> ::= "apply " <reference> "{" <return_stmt> "}"
+<rule_stmt> ::= "rule " <identifier> "{" <rule_body> "}"
 <rule_body> ::= <variable_stmt>* <assert_stmt>
 <assert_stmt> ::= "assert " <string>
-<variable_stmt> ::= "var " <literal> " = " <string> ";"
-<namespace_stmt> ::= "ns " <literal> " = " <string> ";"
-<return_stmt> ::= "return " (<string> | <identifier>)
+<variable_stmt> ::= "var " <identifier> " = " <string> ";"
+<namespace_stmt> ::= "ns " <identifier> " = " <string> ";"
+<return_stmt> ::= "return " (<string> | <reference>)
 <string> ::= "\"" ([1-9] | [a-z])+ "\""
-<identifier> ::= "$" ([1-9] | [a-z])+
-<literal> ::= ([1-9] | [a-z])+
+<reference> ::= "$" ([1-9] | [a-z])+
+<identifier> ::= ([1-9] | [a-z])+

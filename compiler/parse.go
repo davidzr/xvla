@@ -18,7 +18,8 @@ func (p *parser) match(expected TokenType) {
 func (p *parser) variable_stmt() *Node {
 	t := NewNode(NodeVariable, p.s.line)
 	p.match(VARIABLE)
-	t.child = append(t.child, p.identifier_stmt())
+	t.name = p.s.tokenString
+	p.match(IDENTIFIER)
 	p.match(EQUAL)
 	t.child = append(t.child, p.string_stmt())
 	p.match(SEMICOLON)
@@ -39,17 +40,12 @@ func (p *parser) reference_stmt() *Node {
 	p.match(REFERENCE)
 	return t
 }
-func (p *parser) identifier_stmt() *Node {
-	t := NewNode(NodeIdentifier, p.s.line)
-	t.value = p.s.tokenString
-	p.match(IDENTIFIER)
-	return t
-}
 
 func (p *parser) namespace_stmt() *Node {
 	t := NewNode(NodeNamespace, p.s.line)
 	p.match(NAMESPACE)
-	t.child = append(t.child, p.identifier_stmt())
+	t.name = p.s.tokenString
+	p.match(IDENTIFIER)
 	p.match(EQUAL)
 	t.child = append(t.child, p.string_stmt())
 	p.match(SEMICOLON)
@@ -122,7 +118,8 @@ func (p *parser) rule_body() *Node {
 func (p *parser) rule_stmt() *Node {
 	t := NewNode(NodeRule, p.s.line)
 	p.match(RULE)
-	t.child = append(t.child, p.identifier_stmt())
+	t.name = p.s.tokenString
+	p.match(IDENTIFIER)
 	p.match(LBRACKET)
 	t.child = append(t.child, p.rule_body())
 	p.match(RBRACKET)
@@ -145,7 +142,7 @@ func (p *parser) program() *Node {
 	t := p.statement()
 	for p.s.token == CONTEXT || p.s.token == VARIABLE || p.s.token == NAMESPACE || p.s.token == RULE {
 		n := p.statement()
-		t.Sibling = append(t.Sibling, n)
+		t.sibling = append(t.sibling, n)
 	}
 	return t
 }
