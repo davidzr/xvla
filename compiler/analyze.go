@@ -60,8 +60,9 @@ func typeCheck(nodes []*Node) {
 	for _, n := range nodes {
 		switch n.nodeType {
 		case NodeContext:
-			if n.child[0].nodeType == NodeType(REFERENCE) {
+			if n.child[0].nodeType == NodeReference {
 				name := n.child[0].name[1:]
+				fmt.Println(name)
 				tree, ok := symtab[name]
 				if ok {
 					if tree.typeo != "variable" {
@@ -71,17 +72,18 @@ func typeCheck(nodes []*Node) {
 					typeError(n, "variable not found")
 				}
 			}
+			typeCheck(n.child)
 		case NodeApply:
 			name := n.child[0].name[1:]
 			tree, ok := symtab[name]
 			if ok {
 				if tree.typeo != "rule" {
 					typeError(n, "identifier mus be a rule")
-				} else {
-					typeError(n, "rule not found.")
 				}
+			} else {
+				typeError(n, "rule not found.")
 			}
-		case NodeContextBody, NodeRuleBody:
+		case NodeRule, NodeContextBody, NodeRuleBody:
 			typeCheck(n.child)
 		}
 	}
