@@ -1,5 +1,7 @@
 package compiler
 
+import "fmt"
+
 type Resource struct {
 	value string
 	line  int
@@ -8,7 +10,12 @@ type Resource struct {
 
 var symtab = make(map[string]Resource)
 
-func Analyze(nodes []*Node) {
+func typeError(t *Node, message string) {
+	errorStr := fmt.Sprintf("Type error at: %d, %s", t.line, message)
+	panic(errorStr)
+}
+
+func analyze(nodes []*Node) {
 	for _, n := range nodes {
 
 		switch n.nodeType {
@@ -18,13 +25,18 @@ func Analyze(nodes []*Node) {
 				symtab[n.name] = Resource{
 					typeo: "variable",
 				}
+			} else {
+				typeError(n, "already declared.")
 			}
+
 		case NodeRule:
 			_, ok := symtab[n.name]
 			if !ok {
 				symtab[n.name] = Resource{
 					typeo: "rule",
 				}
+			} else {
+				typeError(n, "already declared.")
 			}
 		case NodeNamespace:
 			_, ok := symtab[n.name]
@@ -32,12 +44,45 @@ func Analyze(nodes []*Node) {
 				symtab[n.name] = Resource{
 					typeo: "namespace",
 				}
+			} else {
+				typeError(n, "already declared.")
 			}
 		case NodeContextBody:
-			Analyze(n.child)
+			analyze(n.child)
 		case NodeRuleBody:
-			Analyze(n.child)
+			analyze(n.child)
 		}
 
+	}
+}
+
+func typeCheck(nodes []*Node) {
+	for _, n := range nodes {
+		switch n.nodeType {
+		case NodeContext:
+			if n.child[0].nodeType == NodeType(REFERENCE) {
+				name := n.child[0].name[1:]
+				tree, ok := symtab[name]
+				if ok {
+					if tree.typeo != "variable" {
+						typeError(n, "path is not a variable or string.")
+					}
+				} else {
+					typeError(n, "variable not found")
+				}
+			}
+		case NodeApply:
+			name := n.child[0].name[1:]
+			tree, ok := symtab[name]
+			if ok {
+				if tree.typeo != "rule" {
+					typeError(n, "identifier mus be a rule")
+				} else {
+					typeError(n, "rule not found.")
+				}
+			}
+		case NodeContextBody, NodeRuleBody:
+			typeCheck(n.child)
+		}
 	}
 }

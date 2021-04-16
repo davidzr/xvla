@@ -36,7 +36,7 @@ func (p *parser) string_stmt() *Node {
 
 func (p *parser) reference_stmt() *Node {
 	t := NewNode(NodeReference, p.s.line)
-	t.value = p.s.tokenString
+	t.name = p.s.tokenString
 	p.match(REFERENCE)
 	return t
 }
@@ -147,7 +147,7 @@ func (p *parser) program() *Node {
 	return t
 }
 
-func Parse(source string) *Node {
+func parse(source string) *Node {
 	s := &scanner{source: source}
 	p := &parser{s: s}
 	p.s.nextToken()
