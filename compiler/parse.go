@@ -28,7 +28,7 @@ func (p *parser) variable_stmt() *Node {
 }
 
 func (p *parser) string_stmt() *Node {
-	t := NewNode(nodeString, p.s.line)
+	t := NewNode(nodeLiteral, p.s.line)
 	t.value = p.s.tokenString
 	p.match(STRING)
 	return t

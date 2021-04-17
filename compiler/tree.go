@@ -9,7 +9,7 @@ const (
 	nodeVariable
 	nodeNamespace
 	nodeReturn
-	nodeString
+	nodeLiteral
 	nodeReference
 	nodeIdentifier
 	nodeContextBody

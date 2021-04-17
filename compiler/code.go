@@ -22,7 +22,8 @@ type rule struct {
 	Assert  []assert `xml:"assert"`
 }
 type assert struct {
-	Test string `xml:"test,attr"`
+	Test    string `xml:"test,attr"`
+	Message string `xml:",innerxml"`
 }
 type ns struct {
 	Uri string `xml:"uri,attr"`
@@ -33,6 +34,16 @@ type let struct {
 }
 
 func emitApply(t *Node, c *rule) {
+
+	name := t.child[0].name[1:]
+	r, _ := symtab[name]
+
+	a := assert{
+		Test:    r.value,
+		Message: t.value,
+	}
+
+	c.Assert = append(c.Assert, a)
 
 }
 
@@ -68,7 +79,6 @@ func emitContext(t *Node, p *pattern) {
 func emitVariable(t *Node, a *[]let) {
 
 	value := symtab[t.name].value
-	fmt.Println(t.name)
 	v := let{
 		Name:  t.name,
 		Value: value,
