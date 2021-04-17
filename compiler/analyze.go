@@ -54,7 +54,6 @@ func analyze(nodes []*Node) {
 		case nodeApply:
 			analyze(n.child)
 			n.value = n.child[1].value
-			fmt.Println(n.value)
 		case nodeNamespace:
 			_, ok := symtab[n.name]
 			if !ok {

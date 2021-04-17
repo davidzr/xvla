@@ -4,12 +4,16 @@ import (
 	"encoding/xml"
 	"fmt"
 	"html"
+
+	"golang.org/x/text/encoding/charmap"
 )
 
 type schema struct {
-	Ns      []ns      `xml:"ns"`
-	Let     []let     `xml:"let"`
-	Pattern []pattern `xml:"pattern"`
+	Xmlns        string    `xml:"xmlns,attr"`
+	Querybinding string    `xml:"queryBinding,attr"`
+	Ns           []ns      `xml:"ns"`
+	Let          []let     `xml:"let"`
+	Pattern      []pattern `xml:"pattern"`
 }
 
 type pattern struct {
@@ -87,7 +91,10 @@ func emitVariable(t *Node, a *[]let) {
 
 }
 func generateCode(t []*Node) {
-	s := &schema{}
+	s := &schema{
+		Xmlns:        "http://purl.oclc.org/dsdl/schematron",
+		Querybinding: "xslt2",
+	}
 	p := pattern{Name: "main"}
 
 	for _, n := range t {
@@ -105,6 +112,10 @@ func generateCode(t []*Node) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(html.UnescapeString(string(output)))
+
+	a := charmap.ISO8859_1.NewEncoder()
+	b, _ := a.String(string(output))
+	b = html.UnescapeString(b)
+	fmt.Println(b)
 
 }
