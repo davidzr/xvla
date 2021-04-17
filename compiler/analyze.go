@@ -33,9 +33,11 @@ func analyze(nodes []*Node) {
 
 		case nodeRule:
 			_, ok := symtab[n.name]
+
 			if !ok {
 				symtab[n.name] = Resource{
 					typeo: "rule",
+					value: "value",
 				}
 			} else {
 				typeError(n, "already declared.")
@@ -49,9 +51,7 @@ func analyze(nodes []*Node) {
 			} else {
 				typeError(n, "already declared.")
 			}
-		case nodeContextBody:
-			analyze(n.child)
-		case nodeRuleBody:
+		case nodeContextBody, nodeRuleBody, nodeContext:
 			analyze(n.child)
 		}
 

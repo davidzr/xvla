@@ -8,8 +8,8 @@ import (
 
 type schema struct {
 	Ns      []ns      `xml:"ns"`
-	Pattern []pattern `xml:"pattern"`
 	Let     []let     `xml:"let"`
+	Pattern []pattern `xml:"pattern"`
 }
 
 type pattern struct {
@@ -18,6 +18,7 @@ type pattern struct {
 }
 type rule struct {
 	Context string   `xml:"context,attr"`
+	Let     []let    `xml:"let"`
 	Assert  []assert `xml:"assert"`
 }
 type assert struct {
@@ -27,8 +28,23 @@ type ns struct {
 	Uri string `xml:"uri,attr"`
 }
 type let struct {
-	Name  string `xml:"name"`
-	Value string `xml:"value"`
+	Name  string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
+func emitApply(t *Node, c *rule) {
+
+}
+
+func emitContextBody(t []*Node, c *rule) {
+
+	for _, n := range t {
+		if n.nodeType == nodeVariable {
+			emitVariable(n, &c.Let)
+		} else {
+			emitApply(n, c)
+		}
+	}
 }
 
 func emitContext(t *Node, p *pattern) {
@@ -44,19 +60,34 @@ func emitContext(t *Node, p *pattern) {
 	r := rule{
 		Context: contextStr,
 	}
+	emitContextBody(t.child[1].child, &r)
 	p.Rule = append(p.Rule, r)
 
 }
 
+func emitVariable(t *Node, a *[]let) {
+
+	value := symtab[t.name].value
+	fmt.Println(t.name)
+	v := let{
+		Name:  t.name,
+		Value: value,
+	}
+	*a = append((*a), v)
+
+}
 func generateCode(t []*Node) {
 	s := &schema{}
 	p := pattern{Name: "main"}
 
 	for _, n := range t {
 		switch n.nodeType {
+		case nodeVariable:
+			emitVariable(n, &s.Let)
 		case nodeContext:
 			emitContext(n, &p)
 		}
+
 	}
 
 	s.Pattern = append(s.Pattern, p)
