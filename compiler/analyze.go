@@ -19,17 +19,19 @@ func analyze(nodes []*Node) {
 	for _, n := range nodes {
 
 		switch n.nodeType {
-		case NodeVariable:
+		case nodeVariable:
 			_, ok := symtab[n.name]
+			value := n.child[0].value
 			if !ok {
 				symtab[n.name] = Resource{
 					typeo: "variable",
+					value: value,
 				}
 			} else {
 				typeError(n, "already declared.")
 			}
 
-		case NodeRule:
+		case nodeRule:
 			_, ok := symtab[n.name]
 			if !ok {
 				symtab[n.name] = Resource{
@@ -38,7 +40,7 @@ func analyze(nodes []*Node) {
 			} else {
 				typeError(n, "already declared.")
 			}
-		case NodeNamespace:
+		case nodeNamespace:
 			_, ok := symtab[n.name]
 			if !ok {
 				symtab[n.name] = Resource{
@@ -47,9 +49,9 @@ func analyze(nodes []*Node) {
 			} else {
 				typeError(n, "already declared.")
 			}
-		case NodeContextBody:
+		case nodeContextBody:
 			analyze(n.child)
-		case NodeRuleBody:
+		case nodeRuleBody:
 			analyze(n.child)
 		}
 
@@ -59,10 +61,9 @@ func analyze(nodes []*Node) {
 func typeCheck(nodes []*Node) {
 	for _, n := range nodes {
 		switch n.nodeType {
-		case NodeContext:
-			if n.child[0].nodeType == NodeReference {
+		case nodeContext:
+			if n.child[0].nodeType == nodeReference {
 				name := n.child[0].name[1:]
-				fmt.Println(name)
 				tree, ok := symtab[name]
 				if ok {
 					if tree.typeo != "variable" {
@@ -73,17 +74,17 @@ func typeCheck(nodes []*Node) {
 				}
 			}
 			typeCheck(n.child)
-		case NodeApply:
+		case nodeApply:
 			name := n.child[0].name[1:]
 			tree, ok := symtab[name]
 			if ok {
 				if tree.typeo != "rule" {
-					typeError(n, "identifier mus be a rule")
+					typeError(n, "reference must be a rule")
 				}
 			} else {
 				typeError(n, "rule not found.")
 			}
-		case NodeRule, NodeContextBody, NodeRuleBody:
+		case nodeRule, nodeContextBody, nodeRuleBody:
 			typeCheck(n.child)
 		}
 	}

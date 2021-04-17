@@ -16,7 +16,7 @@ func (p *parser) match(expected TokenType) {
 }
 
 func (p *parser) variable_stmt() *Node {
-	t := NewNode(NodeVariable, p.s.line)
+	t := NewNode(nodeVariable, p.s.line)
 	p.match(VARIABLE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)
@@ -28,21 +28,21 @@ func (p *parser) variable_stmt() *Node {
 }
 
 func (p *parser) string_stmt() *Node {
-	t := NewNode(NodeString, p.s.line)
+	t := NewNode(nodeString, p.s.line)
 	t.value = p.s.tokenString
 	p.match(STRING)
 	return t
 }
 
 func (p *parser) reference_stmt() *Node {
-	t := NewNode(NodeReference, p.s.line)
+	t := NewNode(nodeReference, p.s.line)
 	t.name = p.s.tokenString
 	p.match(REFERENCE)
 	return t
 }
 
 func (p *parser) namespace_stmt() *Node {
-	t := NewNode(NodeNamespace, p.s.line)
+	t := NewNode(nodeNamespace, p.s.line)
 	p.match(NAMESPACE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)
@@ -54,14 +54,14 @@ func (p *parser) namespace_stmt() *Node {
 }
 
 func (p *parser) return_stmt() *Node {
-	t := NewNode(NodeReturn, p.s.line)
+	t := NewNode(nodeReturn, p.s.line)
 	p.match(RETURN)
 	t.child = append(t.child, p.string_stmt())
 	return t
 }
 
 func (p *parser) apply_stmt() *Node {
-	t := NewNode(NodeApply, p.s.line)
+	t := NewNode(nodeApply, p.s.line)
 	p.match(APPLY)
 	t.child = append(t.child, p.reference_stmt())
 	p.match(LBRACKET)
@@ -71,7 +71,7 @@ func (p *parser) apply_stmt() *Node {
 }
 
 func (p *parser) context_body() *Node {
-	t := NewNode(NodeContextBody, p.s.line)
+	t := NewNode(nodeContextBody, p.s.line)
 	for p.s.token == VARIABLE || p.s.token == APPLY {
 		switch p.s.token {
 		case VARIABLE:
@@ -84,7 +84,7 @@ func (p *parser) context_body() *Node {
 }
 
 func (p *parser) context_stmt() *Node {
-	t := NewNode(NodeContext, p.s.line)
+	t := NewNode(nodeContext, p.s.line)
 	p.match(CONTEXT)
 	p.match(LPARENT)
 	if p.s.token == REFERENCE {
@@ -99,14 +99,14 @@ func (p *parser) context_stmt() *Node {
 	return t
 }
 func (p *parser) assert_stmt() *Node {
-	t := NewNode(NodeAssert, p.s.line)
+	t := NewNode(nodeAssert, p.s.line)
 	p.match(ASSERT)
 	t.child = append(t.child, p.string_stmt())
 	return t
 }
 
 func (p *parser) rule_body() *Node {
-	t := NewNode(NodeRuleBody, p.s.line)
+	t := NewNode(nodeRuleBody, p.s.line)
 	for p.s.token == VARIABLE {
 		t.child = append(t.child, p.variable_stmt())
 	}
@@ -116,7 +116,7 @@ func (p *parser) rule_body() *Node {
 }
 
 func (p *parser) rule_stmt() *Node {
-	t := NewNode(NodeRule, p.s.line)
+	t := NewNode(nodeRule, p.s.line)
 	p.match(RULE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)

@@ -3,18 +3,18 @@ package compiler
 type NodeType int
 
 const (
-	NodeContext = iota
-	NodeRule
-	NodeAssert
-	NodeVariable
-	NodeNamespace
-	NodeReturn
-	NodeString
-	NodeReference
-	NodeIdentifier
-	NodeContextBody
-	NodeRuleBody
-	NodeApply
+	nodeContext = iota
+	nodeRule
+	nodeAssert
+	nodeVariable
+	nodeNamespace
+	nodeReturn
+	nodeString
+	nodeReference
+	nodeIdentifier
+	nodeContextBody
+	nodeRuleBody
+	nodeApply
 )
 
 type Node struct {
