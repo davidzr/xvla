@@ -3,7 +3,7 @@ package compiler
 import (
 	"encoding/xml"
 	"fmt"
-	"os"
+	"html"
 )
 
 type schema struct {
@@ -40,7 +40,7 @@ func emitContext(t *Node, p *pattern) {
 	} else {
 		contextStr = t.child[0].value
 	}
-	fmt.Println(contextStr)
+
 	r := rule{
 		Context: contextStr,
 	}
@@ -60,11 +60,10 @@ func generateCode(t []*Node) {
 	}
 
 	s.Pattern = append(s.Pattern, p)
-	output, err := xml.Marshal(s)
+	output, err := xml.MarshalIndent(s, " ", "    ")
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(html.UnescapeString(string(output)))
 
-	os.Stdout.Write([]byte(xml.Header))
-	os.Stdout.Write(output)
 }

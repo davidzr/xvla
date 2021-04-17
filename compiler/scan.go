@@ -44,6 +44,7 @@ func (s *scanner) nextToken() {
 				state = ENTERINGCOMMENT
 				save = false
 			} else if char == "\"" {
+				save = false
 				state = INSTRING
 			} else if char == "\n" {
 				save = false
@@ -87,6 +88,7 @@ func (s *scanner) nextToken() {
 			}
 		case INSTRING:
 			if char == "\"" {
+				save = false
 				state = DONE
 				s.token = STRING
 			}
