@@ -30,7 +30,8 @@ type assert struct {
 	Message string `xml:",innerxml"`
 }
 type ns struct {
-	Uri string `xml:"uri,attr"`
+	Uri    string `xml:"uri,attr"`
+	Prefix string `xml:"prefix,attr"`
 }
 type let struct {
 	Name  string `xml:"name,attr"`
@@ -80,6 +81,16 @@ func emitContext(t *Node, p *pattern) {
 
 }
 
+func emitNamespace(t *Node, a *[]ns) {
+
+	value := symtab[t.name].value
+	v := ns{
+		Uri:    t.name,
+		Prefix: value,
+	}
+	*a = append((*a), v)
+
+}
 func emitVariable(t *Node, a *[]let) {
 
 	value := symtab[t.name].value
@@ -101,6 +112,8 @@ func generateCode(t []*Node) {
 		switch n.nodeType {
 		case nodeVariable:
 			emitVariable(n, &s.Let)
+		case nodeNamespace:
+			emitNamespace(n, &s.Ns)
 		case nodeContext:
 			emitContext(n, &p)
 		}

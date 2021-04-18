@@ -56,9 +56,11 @@ func analyze(nodes []*Node) {
 			n.value = n.child[1].value
 		case nodeNamespace:
 			_, ok := symtab[n.name]
+			value := n.child[0].value
 			if !ok {
 				symtab[n.name] = Resource{
-					typeo: "namespace",
+					kind:  "namespace",
+					value: value,
 				}
 			} else {
 				typeError(n, "already declared.")
