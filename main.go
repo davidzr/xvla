@@ -9,7 +9,7 @@ import (
 var source string
 
 func main() {
-	source, err := ioutil.ReadFile("/mnt/d/Desarrollo/www/dianfe/ejemplo.vvxxd")
+	source, err := ioutil.ReadFile("/mnt/d/Desarrollo/www/dianfe/test2.txt")
 	if err != nil {
 		panic(err)
 	}

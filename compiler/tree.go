@@ -15,6 +15,7 @@ const (
 	nodeContextBody
 	nodeRuleBody
 	nodeApply
+	nodeProgram
 )
 
 type Node struct {

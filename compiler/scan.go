@@ -8,8 +8,8 @@ type scanner struct {
 }
 
 func (s *scanner) nextChar() (result *string) {
-	if s.position < len(s.source) {
-		char := string(s.source[s.position])
+	if s.position < len([]rune(s.source)) {
+		char := string([]rune(s.source)[s.position])
 		s.position++
 		if char == "\n" {
 			s.line++

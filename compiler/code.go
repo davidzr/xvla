@@ -4,8 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"html"
-
-	"golang.org/x/text/encoding/charmap"
 )
 
 type schema struct {
@@ -125,10 +123,7 @@ func generateCode(t []*Node) {
 	if err != nil {
 		panic(err)
 	}
-
-	a := charmap.ISO8859_1.NewEncoder()
-	b, _ := a.String(string(output))
-	b = html.UnescapeString(b)
-	fmt.Println(b)
+	result := html.UnescapeString(string(output))
+	fmt.Println(result)
 
 }

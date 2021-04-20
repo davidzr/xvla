@@ -15,136 +15,138 @@ func (p *parser) match(expected TokenType) {
 	p.s.nextToken()
 }
 
-func (p *parser) variable_stmt() *Node {
+func (p *parser) variableStmt() *Node {
 	t := NewNode(nodeVariable, p.s.line)
 	p.match(VARIABLE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)
 	p.match(EQUAL)
-	t.child = append(t.child, p.string_stmt())
+	t.child = append(t.child, p.stringStmt())
 	p.match(SEMICOLON)
 
 	return t
 }
 
-func (p *parser) string_stmt() *Node {
+func (p *parser) stringStmt() *Node {
 	t := NewNode(nodeLiteral, p.s.line)
 	t.value = p.s.tokenString
 	p.match(STRING)
 	return t
 }
 
-func (p *parser) reference_stmt() *Node {
+func (p *parser) referenceStmt() *Node {
 	t := NewNode(nodeReference, p.s.line)
 	t.name = p.s.tokenString
 	p.match(REFERENCE)
 	return t
 }
 
-func (p *parser) namespace_stmt() *Node {
+func (p *parser) namespaceStmt() *Node {
 	t := NewNode(nodeNamespace, p.s.line)
 	p.match(NAMESPACE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)
 	p.match(EQUAL)
-	t.child = append(t.child, p.string_stmt())
+	t.child = append(t.child, p.stringStmt())
 	p.match(SEMICOLON)
 
 	return t
 }
 
-func (p *parser) return_stmt() *Node {
+func (p *parser) returnStmt() *Node {
 	t := NewNode(nodeReturn, p.s.line)
 	p.match(RETURN)
-	t.child = append(t.child, p.string_stmt())
+	t.child = append(t.child, p.stringStmt())
 	return t
 }
 
-func (p *parser) apply_stmt() *Node {
+func (p *parser) applyStmt() *Node {
 	t := NewNode(nodeApply, p.s.line)
 	p.match(APPLY)
-	t.child = append(t.child, p.reference_stmt())
+	t.child = append(t.child, p.referenceStmt())
 	p.match(LBRACKET)
-	t.child = append(t.child, p.return_stmt())
+	t.child = append(t.child, p.returnStmt())
 	p.match(RBRACKET)
 	return t
 }
 
-func (p *parser) context_body() *Node {
+func (p *parser) contextBody() *Node {
 	t := NewNode(nodeContextBody, p.s.line)
 	for p.s.token == VARIABLE || p.s.token == APPLY {
 		switch p.s.token {
 		case VARIABLE:
-			t.child = append(t.child, p.variable_stmt())
+			t.child = append(t.child, p.variableStmt())
 		case APPLY:
-			t.child = append(t.child, p.apply_stmt())
+			t.child = append(t.child, p.applyStmt())
 		}
 	}
 	return t
 }
 
-func (p *parser) context_stmt() *Node {
+func (p *parser) contextStmt() *Node {
 	t := NewNode(nodeContext, p.s.line)
 	p.match(CONTEXT)
 	p.match(LPARENT)
 	if p.s.token == REFERENCE {
-		t.child = append(t.child, p.reference_stmt())
+		t.child = append(t.child, p.referenceStmt())
 	} else if p.s.token == STRING {
-		t.child = append(t.child, p.string_stmt())
+		t.child = append(t.child, p.stringStmt())
 	}
 	p.match(RPARENT)
 	p.match(LBRACKET)
-	t.child = append(t.child, p.context_body())
+	t.child = append(t.child, p.contextBody())
 	p.match(RBRACKET)
 	return t
 }
-func (p *parser) assert_stmt() *Node {
+func (p *parser) assertStmt() *Node {
 	t := NewNode(nodeAssert, p.s.line)
 	p.match(ASSERT)
-	t.child = append(t.child, p.string_stmt())
+	t.child = append(t.child, p.stringStmt())
 	return t
 }
 
-func (p *parser) rule_body() *Node {
+func (p *parser) ruleBody() *Node {
 	t := NewNode(nodeRuleBody, p.s.line)
 	for p.s.token == VARIABLE {
-		t.child = append(t.child, p.variable_stmt())
+		t.child = append(t.child, p.variableStmt())
 	}
-	t.child = append(t.child, p.assert_stmt())
+	t.child = append(t.child, p.assertStmt())
 
 	return t
 }
 
-func (p *parser) rule_stmt() *Node {
+func (p *parser) ruleStmt() *Node {
 	t := NewNode(nodeRule, p.s.line)
 	p.match(RULE)
 	t.name = p.s.tokenString
 	p.match(IDENTIFIER)
 	p.match(LBRACKET)
-	t.child = append(t.child, p.rule_body())
+	t.child = append(t.child, p.ruleBody())
 	p.match(RBRACKET)
 	return t
 }
 func (p *parser) statement() *Node {
 	var t *Node
 	if p.s.token == CONTEXT {
-		t = p.context_stmt()
+		t = p.contextStmt()
 	} else if p.s.token == RULE {
-		t = p.rule_stmt()
+		t = p.ruleStmt()
 	} else if p.s.token == VARIABLE {
-		t = p.variable_stmt()
+		t = p.variableStmt()
 	} else if p.s.token == NAMESPACE {
-		t = p.namespace_stmt()
+		t = p.namespaceStmt()
 	}
 	return t
 }
 func (p *parser) program() *Node {
 	t := p.statement()
+	program := NewNode(nodeProgram, p.s.line)
+	program.sibling = append(program.sibling, t)
 	for p.s.token == CONTEXT || p.s.token == VARIABLE || p.s.token == NAMESPACE || p.s.token == RULE {
 		n := p.statement()
-		t.sibling = append(t.sibling, n)
+		program.sibling = append(program.sibling, n)
 	}
-	return t
+	return program
 }
 
 func parse(source string) *Node {
